@@ -4,6 +4,7 @@ const profileSchema = new mongoose.Schema({
     uid: {
         type: String,
         required: true,
+        unique:true
     },
     name: {
         type: String,
