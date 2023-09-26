@@ -19,6 +19,10 @@ const postschema = new mongoose.Schema({
         type:String,
         require:true
     },
+    category:{
+        type:String,
+        require:true
+    },
     location:{
         type:String,
         require:true
