@@ -40,7 +40,7 @@ router.post("/v1/profile/:uid", async (req, res) => {
 
 router.post("/v2/addpost/:uid", async (req, res) => {
   const { uid } = req.params;
-  const { title, price, rating, location, isproduct, score, image } = req.body;
+  const { title, price, rating, location, isproduct, score, image ,category} = req.body;
 
   if (!title || !price || !rating || !location || !isproduct || !score || !image) {
     return res.status(400).json({ message: "Please fill all fields" });
@@ -56,6 +56,7 @@ router.post("/v2/addpost/:uid", async (req, res) => {
       isproduct,
       score,
       image,
+      category,
     });
 
     await post.save();
