@@ -67,4 +67,51 @@ router.post("/v2/addpost/:uid", async (req, res) => {
   }
 });
 
+router.get('/v3/profileview/:uid', async (req, res) => {
+  const { uid } = req.params;
+
+  if (!uid) {
+    return res.status(401).json({ message: 'You need to pass uid' });
+  }
+
+  try {
+    const userProfile = await Profile.findOne({ uid });
+    const userPost = await ProfilePost.findOne({ uid });
+
+    if (!userProfile ) {
+      return res.status(404).json({ message: 'Post Not Found ' });
+    }
+
+    
+
+    
+    res.status(200).json(userProfile,userPost);
+  } catch (err) {
+    res.status(500).json({ message: 'Internal server error', error: err.message });
+  }
+});
+
+router.get("/v4/profilepost/:uid", async (req,res)=>{
+  const { uid } = req.params;
+
+  if (!uid) {
+    return res.status(401).json({ message: 'You need to pass uid' });
+  }
+
+  try {
+    const userProfile = await ProfilePost.findOne({ uid });
+
+    if (!userProfile) {
+      return res.status(404).json({ message: 'User not foun' });
+    }
+
+    
+    res.status(200).json(userProfile);
+  } catch (err) {
+    res.status(500).json({ message: 'Internal server error', error: err.message });
+  }
+
+})
+
+
 module.exports = router;
