@@ -100,7 +100,7 @@ router.get("/v4/profilepost/:uid", async (req,res)=>{
   }
 
   try {
-    const userProfile = await ProfilePost.findOne({ uid });
+    const userProfile = await ProfilePost.find({ uid });
 
     if (!userProfile) {
       return res.status(404).json({ message: 'User not foun' });
@@ -114,5 +114,82 @@ router.get("/v4/profilepost/:uid", async (req,res)=>{
 
 })
 
+
+router.delete("/v5/profile/:uid", async (req, res) => {
+  const { uid } = req.params;
+
+  if (!uid) {
+    return res.status(400).json({ message: "UID is required" });
+  }
+
+  try {
+    const deletedProfile = await Profile.findOneAndRemove({ uid });
+
+    if (!deletedProfile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    
+    await ProfilePost.deleteMany({ uid });
+
+    res.status(200).json({ message: "Profile deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+router.delete("/v6/postdelete/:uid/:postId", async (req, res) => {
+  const { uid, postId } = req.params;
+
+  if (!uid || !postId) {
+    return res.status(400).json({ message: "UID and Post ID are required" });
+  }
+
+  try {
+  
+    const profile = await Profile.findOne({ uid: uid });
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    const deletedPost = await ProfilePost.findOneAndRemove({ _id: postId, uid: uid });
+
+    if (!deletedPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+router.put("/v7/updateprofile/:uid", async (req, res) => {
+  const { uid } = req.params;
+  const updateData = req.body;
+
+  if (!uid) {
+    return res.status(400).json({ message: "UID is required" });
+  }
+
+  try {
+   
+    const updatedProfile = await Profile.findOneAndUpdate({ uid: uid }, updateData, {
+      new: true, 
+    });
+
+    if (!updatedProfile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    res.status(200).json(updatedProfile);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 module.exports = router;
