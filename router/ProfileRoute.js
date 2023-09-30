@@ -192,4 +192,63 @@ router.put("/v7/updateprofile/:uid", async (req, res) => {
   }
 });
 
+
+
+router.put("/v8/postupdate/:uid/:postid", async (req, res) => {
+  const { uid, postid } = req.params;
+  const updateData = req.body;
+
+  if (!uid || !postid) {
+    return res.status(400).json({ message: "UID and Post ID are required in the URL" });
+  }
+
+  try {
+    const profile = await Profile.findOne({ uid });
+
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    const updatedPost = await ProfilePost.findOneAndUpdate(
+      { _id: postid, uid: uid },
+      updateData,
+      { new: true }
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    res.status(200).json({ message: "Post updated successfully", post: updatedPost });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+router.get("/v9/categoryposts/:category", async (req,res)=>{
+         const { category } = req.params;
+
+         if(!category){
+          res.status(401).json({message:"you need to pass category string"});
+         }
+
+         try{
+          const categoryProduct = await ProfilePost.find({category:category})
+
+          res.status(201).json(categoryProduct);
+
+         }catch(err){
+          res.status(401).json(err)
+         }
+})
+
+
+
+
+
+
+
+
 module.exports = router;
