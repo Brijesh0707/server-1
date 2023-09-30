@@ -246,6 +246,30 @@ router.get("/v9/categoryposts/:category", async (req,res)=>{
 
 
 
+router.get("/v10/posts/search/:title", async (req, res) => {
+  const { title } = req.params;
+
+  if (!title) {
+    return res.status(400).json({ message: "Title is required in the URL" });
+  }
+
+  try {
+    const posts = await ProfilePost.find({ title: { $regex: title, $options: "i" } });
+
+    if (!posts || posts.length === 0) {
+      return res.status(404).json({ message: "No posts found matching the title" });
+    }
+
+    res.status(200).json(posts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+
+
 
 
 
