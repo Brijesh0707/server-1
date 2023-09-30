@@ -77,7 +77,7 @@ router.get('/v3/profileview/:uid', async (req, res) => {
 
   try {
     const userProfile = await Profile.findOne({ uid });
-    const userPost = await ProfilePost.findOne({ uid });
+  
 
     if (!userProfile ) {
       return res.status(404).json({ message: 'Post Not Found ' });
@@ -86,7 +86,7 @@ router.get('/v3/profileview/:uid', async (req, res) => {
     
 
     
-    res.status(200).json(userProfile,userPost);
+    res.status(200).json(userProfile);
   } catch (err) {
     res.status(500).json({ message: 'Internal server error', error: err.message });
   }
