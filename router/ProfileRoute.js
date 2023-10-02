@@ -40,7 +40,7 @@ router.post("/v1/profile/:uid", async (req, res) => {
 
 router.post("/v2/addpost/:uid", async (req, res) => {
   const { uid } = req.params;
-  const { title, price, rating, location, isproduct, score, image ,category} = req.body;
+  const { title, price, rating, location, isproduct, score, image ,category,description} = req.body;
 
   if (!title || !price || !rating || !location || !isproduct || !score || !image) {
     return res.status(400).json({ message: "Please fill all fields" });
@@ -57,6 +57,7 @@ router.post("/v2/addpost/:uid", async (req, res) => {
       score,
       image,
       category,
+      description,
     });
 
     await post.save();
@@ -267,6 +268,40 @@ router.get("/v10/posts/search/:title", async (req, res) => {
   }
 });
 
+
+
+
+router.get("/v11/postdetail/:postid", async (req, res) => {
+  const { postid } = req.params;
+
+  if (!postid) {
+    return res.status(400).json({ message: "Post ID is required in the URL" });
+  }
+
+  try {
+  
+    const post = await ProfilePost.findById(postid);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+   
+    const uid = post.uid;
+
+    const profile = await Profile.findOne({ uid });
+
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+
+    res.status(200).json({ message: "Post and Profile details", post, profile });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 
 

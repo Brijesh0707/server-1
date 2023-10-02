@@ -38,6 +38,10 @@ const postschema = new mongoose.Schema({
     image:{
         type:String,
         require:true
+    },
+    description:{
+        type:String,
+        require:true
     }
 
 })
