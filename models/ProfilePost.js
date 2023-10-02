@@ -12,11 +12,11 @@ const postschema = new mongoose.Schema({
         require:true
     },
     price:{
-        type:String,
+        type:Number,
         require:true
     },
     rating:{
-        type:String,
+        type:Number,
         require:true
     },
     category:{
@@ -32,7 +32,7 @@ const postschema = new mongoose.Schema({
         require:true
     },
     score:{
-        type:String,
+        type:Number,
         require:true
     },
     image:{
