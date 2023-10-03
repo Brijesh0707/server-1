@@ -40,9 +40,9 @@ router.post("/v1/profile/:uid", async (req, res) => {
 
 router.post("/v2/addpost/:uid", async (req, res) => {
   const { uid } = req.params;
-  const { title, price, rating, location, isproduct, score, image ,category,description} = req.body;
+  const { title, price, rating,duration, score, image ,category,description} = req.body;
 
-  if (!title || !price || !rating || !location || !isproduct || !score || !image) {
+  if (!title || !price || !rating || !score || !image ||!duration) {
     return res.status(400).json({ message: "Please fill all fields" });
   }
 
@@ -52,8 +52,7 @@ router.post("/v2/addpost/:uid", async (req, res) => {
       title,
       price,
       rating,
-      location,
-      isproduct,
+      duration,
       score,
       image,
       category,
@@ -302,6 +301,26 @@ router.get("/v11/postdetail/:postid", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+
+
+router.get("/v12/popular/post", async (req, res) => {
+  try {
+    const popularPosts = await ProfilePost.find()
+      .sort({ score: -1 }) 
+      .limit(10); 
+
+    if (!popularPosts || popularPosts.length === 0) {
+      return res.status(404).json({ message: "No popular posts found" });
+    }
+
+    res.status(200).json({ message: "Popular Posts", posts: popularPosts });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 
 
 
