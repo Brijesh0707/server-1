@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Profile = require("../models/Profile"); 
 const ProfilePost = require("../models/ProfilePost");
+const Deals = require("../models/Deal");
 
 
 router.get("/profiles", (req, res) => {
@@ -42,7 +43,7 @@ router.post("/v2/addpost/:uid", async (req, res) => {
   const { uid } = req.params;
   const { title, price, rating,duration, score, image ,category,description} = req.body;
 
-  if (!title || !price || !rating || !score || !image ||!duration) {
+  if (!title || !price || !rating || !score || !image ||!duration || !category || !description) {
     return res.status(400).json({ message: "Please fill all fields" });
   }
 
@@ -320,6 +321,26 @@ router.get("/v12/popular/post", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+
+router.get("/v14/deals", async  (req,res)=>{
+  try{
+
+    const Deal = await Deals.find();
+
+    if(!Deal){
+      res.status(401).json({message:"deals not found"});
+
+    }
+
+    res.status(201).json(Deal);
+
+  }catch(err){
+    res.status(201).json(err)
+  }
+
+
+})
 
 
 

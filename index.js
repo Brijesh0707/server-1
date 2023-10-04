@@ -26,6 +26,8 @@ mongoose.connection.on("error", (err) => {
 
 
 require('./models/Profile');
+require('./models/Deal');
+require('./models/ProfilePost');
 
 
 
