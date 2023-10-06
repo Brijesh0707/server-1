@@ -12,6 +12,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 app.use(require("./router/ProfileRoute"))
+app.use(require('./router/Request'));
 
 mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -28,6 +29,7 @@ mongoose.connection.on("error", (err) => {
 require('./models/Profile');
 require('./models/Deal');
 require('./models/ProfilePost');
+require("./models/Request");
 
 
 
