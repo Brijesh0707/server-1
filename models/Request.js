@@ -13,6 +13,9 @@ const requestSchema = new mongoose.Schema({
   mobile:{
     type:Number,
   },
+  postid:{
+    type:String,
+  },
   status: {
     type: String,
     enum: ["pending", "accepted"],

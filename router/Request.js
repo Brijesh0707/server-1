@@ -1,38 +1,48 @@
 const express = require("express");
 const Profile = require("../models/Profile");
 const Request = require("../models/Request");
+const ProfilePost = require("../models/ProfilePost");
 
 const router = express.Router();
 
-router.post("/r1/request/:suid/:ruid", async (req, res) => {
-  const { suid, ruid } = req.params;
-
-  const senderProfile = await Profile.findOne({ uid: suid });
-  const receiverProfile = await Profile.findOne({ uid: ruid });
-
-  if (!senderProfile || !receiverProfile) {
-    return res.status(401).json({ message: "Both sender and receiver profiles must exist." });
-  }
+router.post("/r1/request/:suid/:ruid/:postid", async (req, res) => {
+  const { suid, ruid, postid } = req.params;
 
   try {
+    const senderProfile = await Profile.findOne({ uid: suid });
+    const receiverProfile = await Profile.findOne({ uid: ruid });
+    const post = await ProfilePost.findOne({ _id: postid });
+
+    if (!senderProfile || !receiverProfile || !post) {
+      return res.status(401).json({ message: "Both sender and receiver profiles must exist." });
+    }
+
+    const existingRequest = await Request.findOne({ sender: suid, receiver: ruid, postid: postid });
+
+    if (existingRequest) {
+      return res.status(401).json({ message: "Request already exists." });
+    }
+
     const newRequest = new Request({
       sender: suid,
       receiver: ruid,
+      postid: postid,
     });
 
     await newRequest.save();
     res.status(201).json({ message: "Request sent successfully." });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error." });
   }
 });
 
-router.post("/r2/accept-request/:requestId", async (req, res) => {
+router.post("/r2/accept-request/:requestId/:status", async (req, res) => {
   const requestId = req.params.requestId;
+  const status = req.params.status;
 
   try {
     const request = await Request.findById(requestId);
-    console.log(request);
 
     if (!request) {
       return res.status(404).json({ message: "Request not found." });
@@ -42,36 +52,43 @@ router.post("/r2/accept-request/:requestId", async (req, res) => {
       return res.status(400).json({ message: "Request has already been accepted." });
     }
 
+    if (status === "ignore") {
+        await Request.findByIdAndDelete(requestId); 
+        return res.json({ message: "Request ignored successfully." });
+      }
+
     const receiverProfile = await Profile.findOne({ uid: request.receiver });
 
     if (!receiverProfile) {
       return res.status(404).json({ message: "Receiver profile not found." });
     }
-    request.mobile = receiverProfile.mobile;
+
     request.status = "accepted";
-    await request.save();
+    await request.save(); 
 
     res.json({ message: "Request accepted successfully." });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error." });
   }
 });
 
 router.get("/r3/checkrequest/:uid", async (req, res) => {
-    const { uid } = req.params;
-    try {
-      const requests = await Request.find({
-        $or: [{ sender: uid }, { receiver: uid }],
-      });
-  
-      if (!requests || requests.length === 0) {
-        res.status(404).json({ message: "No matching requests found." });
-      } else {
-        res.status(200).json(requests);
-      }
-    } catch (err) {
-      res.status(500).json({ message: "Server error." });
+  const { uid } = req.params;
+  try {
+    const requests = await Request.find({
+      $or: [{ sender: uid }, { receiver: uid }],
+    });
+
+    if (!requests || requests.length === 0) {
+      res.status(404).json({ message: "No matching requests found." });
+    } else {
+      res.status(200).json(requests);
     }
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error." });
+  }
+});
 
 module.exports = router;
