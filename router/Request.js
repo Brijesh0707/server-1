@@ -49,7 +49,7 @@ router.post("/r2/accept-request/:requestId/:status", async (req, res) => {
     }
 
     if (request.status === "accepted") {
-      return res.status(400).json({ message: "Request has already been accepted." });
+      return res.status(200).json({ message: "Request has already been accepted." });
     }
 
     if (status === "ignore") {
