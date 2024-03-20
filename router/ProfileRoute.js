@@ -342,6 +342,14 @@ router.get("/v14/deals", async  (req,res)=>{
 
 })
 
+router.post("/v15/request/:uid/:ruid",(req,res)=>{
+  const { uid,ruid } = req.params;
+  
+  
+
+
+})
+
 
 
 

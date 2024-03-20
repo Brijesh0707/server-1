@@ -4,30 +4,28 @@ const Request = require("../models/Request");
 const ProfilePost = require("../models/ProfilePost");
 
 const router = express.Router();
-
-// Route for creating a new request
 router.post("/r1/request/:suid/:ruid/:postid", async (req, res) => {
   const { suid, ruid, postid } = req.params;
 
   try {
-    // Find sender, receiver, and post based on their IDs
+
     const senderProfile = await Profile.findOne({ uid: suid });
     const receiverProfile = await Profile.findOne({ uid: ruid });
     const post = await ProfilePost.findOne({ _id: postid });
 
-    // Check if sender, receiver, and post exist
+  
     if (!senderProfile || !receiverProfile || !post) {
       return res.status(401).json({ message: "Both sender and receiver profiles must exist." });
     }
 
-    // Check if the request already exists
+   
     const existingRequest = await Request.findOne({ sender: suid, receiver: ruid, postid: postid });
 
     if (existingRequest) {
       return res.status(401).json({ message: "Request already exists." });
     }
 
-    // Create a new request
+ 
     const newRequest = new Request({
       sender: suid,
       receiver: ruid,
